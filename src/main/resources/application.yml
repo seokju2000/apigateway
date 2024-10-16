@@ -1,0 +1,46 @@
+eureka:
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+      defaultZone: http://localhost:8761/eureka
+
+spring:
+  application:
+    name: apigateway-service
+  cloud:
+    circuitbreaker:
+      resilience4j:
+        enabled: true
+    gateway:
+      routes:
+        - id: first-service
+          uri: lb://first-service
+          predicates:
+            - Path=/first-service/**
+#          filters:
+#            - name: CircuitBreaker
+#              args:
+#                name: testCircuitBreaker
+#                fallbackUri: forward:/fallback/authFailure
+        - id: second-service
+          uri: lb://second-service
+          predicates:
+            - Path=/second-service/**
+
+#resilience4j:
+#  timelimiter:
+#    configs:
+#      default:
+#        cancel-running-future: false
+#        timeout-duration: 5s
+#  circuitbreaker:
+#    configs:
+#      default:
+#        register-health-indicator: true
+#        minimum-number-of-calls: 10
+#        failure-rate-threshold: 50
+#        wait-duration-in-open-state: 10s
+#    instances:
+#      testCircuitBreaker:
+#        base-config: default
